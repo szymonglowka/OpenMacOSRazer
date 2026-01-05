@@ -1,6 +1,7 @@
 
 #!/usr/bin/env python3
 
+import argparse
 import logging
 import os
 import sys
@@ -12,46 +13,65 @@ if getattr(sys, 'frozen', False):
     frameworks_dir = os.path.join(os.path.dirname(sys.executable), '..', 'Frameworks')
     os.environ['DYLD_LIBRARY_PATH'] = frameworks_dir
 
-try:
-    log_dir = os.path.expanduser("~/Library/Logs")
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir, exist_ok=True)
-    log_file = os.path.join(log_dir, LOG_FILE_BASENAME)
-    log_exists = os.path.exists(log_file)
-except OSError:
-    log_dir = os.path.expanduser("~")
-    log_file = os.path.join(log_dir, LOG_FILE_BASENAME)
-    log_exists = os.path.exists(log_file)
+def setup_logging(debug_mode: bool):
+    try:
+        log_dir = os.path.expanduser("~/Library/Logs")
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir, exist_ok=True)
+        log_file = os.path.join(log_dir, LOG_FILE_BASENAME)
+        log_exists = os.path.exists(log_file)
+    except OSError:
+        log_dir = os.path.expanduser("~")
+        log_file = os.path.join(log_dir, LOG_FILE_BASENAME)
+        log_exists = os.path.exists(log_file)
 
-log_mode = 'a' if log_exists else 'w'
-logging.basicConfig(
-    filename=log_file,
-    filemode=log_mode,
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
+    log_mode = 'a' if log_exists else 'w'
+    log_level = logging.DEBUG if debug_mode else logging.INFO
 
-logging.info("="*20 + f" {APP_NAME} Started " + "="*20)
-logging.info(f"Python: {sys.version}")
-logging.info(f"Platform: {sys.platform}")
-logging.info(f"Executable path: {sys.executable}")
-logging.info(f"Arguments: {sys.argv}")
-logging.info(f"Log path: {log_file}")
+    handlers = [logging.FileHandler(log_file, mode=log_mode)]
+    if debug_mode:
+        handlers.append(logging.StreamHandler(sys.stdout))
 
-try:
-    logging.info("Importing UI modules...")
-    from PyQt5.QtWidgets import QApplication
-    from razer_ui import MainWindow
-    logging.info("Imports completed successfully.")
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        handlers=handlers
+    )
 
-    def main():
+    logging.info("="*20 + f" {APP_NAME} Started " + "="*20)
+    logging.info(f"Python: {sys.version}")
+    logging.info(f"Platform: {sys.platform}")
+    logging.info(f"Executable path: {sys.executable}")
+    logging.info(f"Arguments: {sys.argv}")
+    logging.info(f"Log path: {log_file}")
+    if debug_mode:
+        logging.info("Debug mode enabled.")
+
+def main():
+    parser = argparse.ArgumentParser(description=APP_NAME)
+    parser.add_argument('--debug', '-d', action='store_true', help='Enable debug mode (verbose logging to console and file)')
+    parser.add_argument('--prod', action='store_true', help='Enable production mode (file logging only, default)')
+    args = parser.parse_args()
+
+    debug_mode = args.debug
+    # --prod is default, so if --prod is set we don't change anything unless debug was also set, but let's assume debug takes precedence or they are mutually exclusive.
+    # Current implementation: debug=True wins. If both false, debug=False.
+
+    setup_logging(debug_mode)
+
+    try:
+        logging.info("Importing UI modules...")
+        from PyQt5.QtWidgets import QApplication
+        from razer_ui import MainWindow
+        logging.info("Imports completed successfully.")
+
         logging.info("Creating QApplication...")
         app = QApplication(sys.argv)
         logging.info("QApplication created.")
 
         logging.info("Creating MainWindow from razer_ui...")
-        window = MainWindow()
+        window = MainWindow(debug_mode=debug_mode)
         logging.info("MainWindow created.")
 
         window.show()
@@ -60,16 +80,17 @@ try:
         logging.info("Starting QApplication event loop...")
         exit_code = app.exec_()
         logging.info(f"Application exited with code: {exit_code}")
+        logging.info("="*20 + f" {APP_NAME} Terminated " + "="*20 + "\n")
         sys.exit(exit_code)
 
-    if __name__ == "__main__":
-        main()
+    except ImportError as import_err:
+        logging.critical(f"Critical import error: {import_err}. Application cannot start.", exc_info=True)
+        print(f"Import error: {import_err}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as general_err:
+        logging.critical(f"Unexpected critical error: {general_err}", exc_info=True)
+        print(f"Critical error: {general_err}", file=sys.stderr)
+        sys.exit(1)
 
-except ImportError as import_err:
-    logging.critical(f"Critical import error: {import_err}. Application cannot start.", exc_info=True)
-    sys.exit(f"Import error: {import_err}")
-except Exception as general_err:
-    logging.critical(f"Unexpected critical error: {general_err}", exc_info=True)
-    sys.exit(f"Critical error: {general_err}")
-finally:
-    logging.info("="*20 + f" {APP_NAME} Terminated " + "="*20 + "\n")
+if __name__ == "__main__":
+    main()

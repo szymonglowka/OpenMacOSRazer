@@ -23,8 +23,9 @@ from razer_common import (
 )
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, debug_mode=False):
         super().__init__()
+        self.debug_mode = debug_mode
         self.setWindowTitle("Razer Control")
         self.setMinimumSize(500, 400)
         self.init_ui()
@@ -61,9 +62,14 @@ class MainWindow(QMainWindow):
 
     def refresh_devices(self):
         self.device_combo.clear()
-        devices = scan_razer_devices()
+        devices = scan_razer_devices(debug_mode=self.debug_mode)
         if not devices:
-            QMessageBox.warning(self, "Error", "No Razer devices found.")
+            msg = "No Razer devices found."
+            if self.debug_mode:
+                msg += "\n\nDebug mode enabled. Check console output for raw HID device data."
+                import logging
+                logging.info("No supported devices found. Check logs for raw HID enumeration.")
+            QMessageBox.warning(self, "Error", msg)
             return
         self.devices = devices
         for dev in devices:
