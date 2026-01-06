@@ -81,107 +81,43 @@ def main():
 
         # Attempt to fix missing plugin issue on macOS
         if sys.platform == 'darwin':
-            # Check if we have already restarted to apply environment variables
-            if not os.environ.get('OPEN_RAZER_RESTARTED'):
-                logging.info("Checking Qt plugins configuration for macOS (Pre-launch)...")
+            logging.info("Checking Qt plugins configuration for macOS...")
 
-                # Method 1: Ask QLibraryInfo
-                plugin_path = QLibraryInfo.location(QLibraryInfo.PluginsPath)
+            # Method 1: Ask QLibraryInfo
+            plugin_path = QLibraryInfo.location(QLibraryInfo.PluginsPath)
+            if plugin_path:
                 logging.info(f"QLibraryInfo.PluginsPath: {plugin_path}")
 
-                # Method 2: Check relative to PyQt5 package (often robust in venvs)
-                pkg_path = os.path.dirname(PyQt5.__file__)
-                logging.info(f"PyQt5 package path: {pkg_path}")
+            # Method 2: Check relative to PyQt5 package
+            pkg_path = os.path.dirname(PyQt5.__file__)
+            logging.info(f"PyQt5 package path: {pkg_path}")
 
-                potential_paths = []
-                if plugin_path:
-                    potential_paths.append(plugin_path)
+            potential_paths = []
+            if plugin_path:
+                potential_paths.append(plugin_path)
 
-                # Common layouts
-                potential_paths.extend([
-                    os.path.join(pkg_path, 'Qt5', 'plugins'),
-                    os.path.join(pkg_path, 'Qt', 'plugins'),
-                    os.path.join(pkg_path, 'plugins'),
-                ])
+            potential_paths.extend([
+                os.path.join(pkg_path, 'Qt5', 'plugins'),
+                os.path.join(pkg_path, 'Qt', 'plugins'),
+                os.path.join(pkg_path, 'plugins'),
+            ])
 
-                found_plugin_dir = None
-                found_platforms_dir = None
+            found_plugin_dir = None
+            for p in potential_paths:
+                cocoa_path = os.path.join(p, 'platforms', 'libqcocoa.dylib')
+                if os.path.exists(cocoa_path):
+                    logging.info(f"Found 'libqcocoa.dylib' at: {cocoa_path}")
+                    found_plugin_dir = p
+                    break
 
-                for p in potential_paths:
-                    cocoa_path = os.path.join(p, 'platforms', 'libqcocoa.dylib')
-                    if os.path.exists(cocoa_path):
-                        logging.info(f"Found 'libqcocoa.dylib' at: {cocoa_path}")
-                        found_plugin_dir = p
-                        found_platforms_dir = os.path.join(p, 'platforms')
-                        break
-                    else:
-                        logging.debug(f"Checked for cocoa plugin at {cocoa_path} (not found)")
+            if found_plugin_dir:
+                # Explicitly tell Qt where to find plugins
+                logging.info(f"Adding library path: {found_plugin_dir}")
+                QCoreApplication.addLibraryPath(found_plugin_dir)
 
-                # Try to locate the 'lib' directory (Qt Frameworks)
-                # It is usually parallel to 'plugins' or 'bin' in 'Qt5' folder.
-                # e.g. .../PyQt5/Qt5/lib
-                found_lib_dir = None
-                if found_plugin_dir:
-                    # found_plugin_dir is usually .../Qt5/plugins
-                    # Try ../lib
-                    potential_lib = os.path.join(os.path.dirname(found_plugin_dir), 'lib')
-                    if os.path.exists(potential_lib):
-                        found_lib_dir = potential_lib
-                        logging.info(f"Found Qt lib directory at: {found_lib_dir}")
-
-                env_updates = {}
-
-                # Only set variables if they aren't already set, to respect user overrides
-                if found_plugin_dir and 'QT_PLUGIN_PATH' not in os.environ:
-                    logging.info(f"Setting QT_PLUGIN_PATH to: {found_plugin_dir}")
-                    env_updates['QT_PLUGIN_PATH'] = found_plugin_dir
-
-                if found_platforms_dir and 'QT_QPA_PLATFORM_PLUGIN_PATH' not in os.environ:
-                    logging.info(f"Setting QT_QPA_PLATFORM_PLUGIN_PATH to: {found_platforms_dir}")
-                    env_updates['QT_QPA_PLATFORM_PLUGIN_PATH'] = found_platforms_dir
-
-                if debug_mode and 'QT_DEBUG_PLUGINS' not in os.environ:
-                    logging.info("Enabling QT_DEBUG_PLUGINS for debug mode")
-                    env_updates['QT_DEBUG_PLUGINS'] = '1'
-
-                if found_lib_dir:
-                    current_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
-                    new_dyld = f"{found_lib_dir}:{current_dyld}" if current_dyld else found_lib_dir
-                    logging.info(f"Updating DYLD_LIBRARY_PATH with: {found_lib_dir}")
-                    env_updates['DYLD_LIBRARY_PATH'] = new_dyld
-
-                    current_framework = os.environ.get('DYLD_FRAMEWORK_PATH', '')
-                    new_framework = f"{found_lib_dir}:{current_framework}" if current_framework else found_lib_dir
-                    logging.info(f"Updating DYLD_FRAMEWORK_PATH with: {found_lib_dir}")
-                    env_updates['DYLD_FRAMEWORK_PATH'] = new_framework
-
-                if env_updates:
-                    logging.info("Restarting application to apply environment variables...")
-                    env = os.environ.copy()
-                    env.update(env_updates)
-                    env['OPEN_RAZER_RESTARTED'] = '1'
-
-                    # Flush stdout/stderr before restart
-                    sys.stdout.flush()
-                    sys.stderr.flush()
-
-                    try:
-                        os.execvpe(sys.executable, [sys.executable] + sys.argv, env)
-                    except OSError as e:
-                        logging.error(f"Failed to restart application: {e}")
-                        # Fallback: try setting os.environ locally
-                        os.environ.update(env_updates)
-            else:
-                logging.info("Environment variables applied via restart.")
-
-            # Explicitly add library paths to Qt (works even if env vars are stripped by SIP)
-            if 'QT_PLUGIN_PATH' in os.environ:
-                logging.info(f"Adding library path from environment: {os.environ['QT_PLUGIN_PATH']}")
-                QCoreApplication.addLibraryPath(os.environ['QT_PLUGIN_PATH'])
-            elif 'found_plugin_dir' in locals() and found_plugin_dir:
-                 # Should not happen in restart branch unless we re-detect, but safe to add
-                 logging.info(f"Adding library path from detection: {found_plugin_dir}")
-                 QCoreApplication.addLibraryPath(found_plugin_dir)
+                # Also set env var for good measure (though SIP might strip it)
+                if 'QT_PLUGIN_PATH' not in os.environ:
+                    os.environ['QT_PLUGIN_PATH'] = found_plugin_dir
 
         logging.info("Creating QApplication...")
         app = QApplication(sys.argv)
