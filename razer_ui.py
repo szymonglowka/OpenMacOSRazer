@@ -12,13 +12,12 @@ from razer_common import (
     send_report_to_device,
     is_mouse_device,
     is_keyboard_device,
-    MOUSE_TARGET_PID, BW3PRO_WIRED_PID, BW3PRO_WIRELESS_PID,
     MOUSE_EFFECT_STATIC, KBD_EFFECT_STATIC,
     MOUSE_EFFECT_BREATHING, KBD_EFFECT_BREATHING,
     MOUSE_EFFECT_WAVE, KBD_EFFECT_WAVE,
     MOUSE_EFFECT_REACTIVE, KBD_EFFECT_REACTIVE,
-    MOUSE_TRANSACTION_ID, MOUSE_CMD_CLASS, MOUSE_CMD_ID, MOUSE_DATA_SIZE,
-    KBD_WIRED_TRANSACTION_ID, KBD_WIRELESS_TRANSACTION_ID, KBD_CMD_CLASS, KBD_CMD_ID, KBD_DATA_SIZE,
+    MOUSE_CMD_CLASS, MOUSE_CMD_ID, MOUSE_DATA_SIZE,
+    KBD_CMD_CLASS, KBD_CMD_ID, KBD_DATA_SIZE,
     MOUSE_SCROLL_WHEEL_LED, KBD_BACKLIGHT_LED
 )
 
@@ -100,22 +99,22 @@ class MainWindow(QMainWindow):
         b = self.static_spin_b.value()
         extra = [r, g, b]
         pid = device['pid']
+        transaction_id = device['transaction_id']
+
         if is_mouse_device(pid):
             led_id = MOUSE_SCROLL_WHEEL_LED
             effect_code = MOUSE_EFFECT_STATIC
-            transaction_id = MOUSE_TRANSACTION_ID
             data_size = MOUSE_DATA_SIZE
             cmd_class = MOUSE_CMD_CLASS
             cmd_id = MOUSE_CMD_ID
         elif is_keyboard_device(pid):
             led_id = KBD_BACKLIGHT_LED
             effect_code = KBD_EFFECT_STATIC
-            transaction_id = KBD_WIRED_TRANSACTION_ID if pid in [BW3PRO_WIRED_PID] else KBD_WIRELESS_TRANSACTION_ID
             data_size = KBD_DATA_SIZE
             cmd_class = KBD_CMD_CLASS
             cmd_id = KBD_CMD_ID
         else:
-            QMessageBox.warning(self, "Error", "Unsupported device.")
+            QMessageBox.warning(self, "Error", "Device type not fully supported yet.")
             return
         args = build_arguments(effect_code, led_id, extra)
         report = construct_razer_report(transaction_id, cmd_class, cmd_id, data_size, args)
@@ -156,17 +155,17 @@ class MainWindow(QMainWindow):
         speed = self.breathing_speed.value()
         extra = base + extra_color + [speed]
         pid = device['pid']
+        transaction_id = device['transaction_id']
+
         if is_mouse_device(pid):
             led_id = MOUSE_SCROLL_WHEEL_LED
             effect_code = MOUSE_EFFECT_BREATHING
-            transaction_id = MOUSE_TRANSACTION_ID
             data_size = MOUSE_DATA_SIZE
             cmd_class = MOUSE_CMD_CLASS
             cmd_id = MOUSE_CMD_ID
         elif is_keyboard_device(pid):
             led_id = KBD_BACKLIGHT_LED
             effect_code = KBD_EFFECT_BREATHING
-            transaction_id = KBD_WIRED_TRANSACTION_ID if pid in [BW3PRO_WIRED_PID] else KBD_WIRELESS_TRANSACTION_ID
             data_size = KBD_DATA_SIZE
             cmd_class = KBD_CMD_CLASS
             cmd_id = KBD_CMD_ID
@@ -206,17 +205,17 @@ class MainWindow(QMainWindow):
         direction = 0 if self.radio_left.isChecked() else 1
         extra = [speed, direction]
         pid = device['pid']
+        transaction_id = device['transaction_id']
+
         if is_mouse_device(pid):
             led_id = MOUSE_SCROLL_WHEEL_LED
             effect_code = MOUSE_EFFECT_WAVE
-            transaction_id = MOUSE_TRANSACTION_ID
             data_size = MOUSE_DATA_SIZE
             cmd_class = MOUSE_CMD_CLASS
             cmd_id = MOUSE_CMD_ID
         elif is_keyboard_device(pid):
             led_id = KBD_BACKLIGHT_LED
             effect_code = KBD_EFFECT_WAVE
-            transaction_id = KBD_WIRED_TRANSACTION_ID if pid in [BW3PRO_WIRED_PID] else KBD_WIRELESS_TRANSACTION_ID
             data_size = KBD_DATA_SIZE
             cmd_class = KBD_CMD_CLASS
             cmd_id = KBD_CMD_ID
@@ -255,17 +254,17 @@ class MainWindow(QMainWindow):
         duration = self.reactive_duration.value()
         extra = color + [duration]
         pid = device['pid']
+        transaction_id = device['transaction_id']
+
         if is_mouse_device(pid):
             led_id = MOUSE_SCROLL_WHEEL_LED
             effect_code = MOUSE_EFFECT_REACTIVE
-            transaction_id = MOUSE_TRANSACTION_ID
             data_size = MOUSE_DATA_SIZE
             cmd_class = MOUSE_CMD_CLASS
             cmd_id = MOUSE_CMD_ID
         elif is_keyboard_device(pid):
             led_id = KBD_BACKLIGHT_LED
             effect_code = KBD_EFFECT_REACTIVE
-            transaction_id = KBD_WIRED_TRANSACTION_ID if pid in [BW3PRO_WIRED_PID] else KBD_WIRELESS_TRANSACTION_ID
             data_size = KBD_DATA_SIZE
             cmd_class = KBD_CMD_CLASS
             cmd_id = KBD_CMD_ID
@@ -295,20 +294,20 @@ class MainWindow(QMainWindow):
             return
         pid = device['pid']
         effect_code = 0x00
+        transaction_id = device['transaction_id']
+
         if is_mouse_device(pid):
             led_id = MOUSE_SCROLL_WHEEL_LED
-            transaction_id = MOUSE_TRANSACTION_ID
             data_size = MOUSE_DATA_SIZE
             cmd_class = MOUSE_CMD_CLASS
             cmd_id = MOUSE_CMD_ID
         elif is_keyboard_device(pid):
             led_id = KBD_BACKLIGHT_LED
-            transaction_id = KBD_WIRED_TRANSACTION_ID if pid in [BW3PRO_WIRED_PID] else KBD_WIRELESS_TRANSACTION_ID
             data_size = KBD_DATA_SIZE
             cmd_class = KBD_CMD_CLASS
             cmd_id = KBD_CMD_ID
         else:
-            QMessageBox.warning(self, "Error", "Unsupported device.")
+            QMessageBox.warning(self, "Error", "Device type not fully supported yet.")
             return
         args = build_arguments(effect_code, led_id, [])
         report = construct_razer_report(transaction_id, cmd_class, cmd_id, data_size, args)

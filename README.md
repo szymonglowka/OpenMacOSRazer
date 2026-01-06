@@ -10,127 +10,106 @@ Become the ultimate open-source tool for managing Razer devices on macOS, offeri
 
 ---
 
-## 🚧 Current Status (April 2025)
-**Python application with a basic GUI (PyQt5)** supporting:
-- Device scanning and selection
-- Setting **Static, Breathing, Wave, and Reactive** RGB effects for supported devices
-- Direct HID communication via `hidapi`
-- Basic application logging
+## 🚧 Current Status
+**Python application with a basic GUI (PyQt5)** offering generic support for Razer devices.
+We have recently integrated hardware definitions from the OpenRazer project, enabling support for **over 250 devices**!
+
+---
+
+## ⚙️ Features
+✅ **Extensive Device Support**: Now supports >250 Razer devices (Mice, Keyboards, Accessories, Laptops) using OpenRazer's hardware definitions.
+✅ **Dynamic Protocol Handling**: Automatically detects device type and generation to use the correct communication protocol.
+✅ **RGB Control**: Set **Static, Breathing, Wave, and Reactive** effects.
+✅ **Graphical User Interface**: Easy-to-use GUI for device selection and configuration.
+✅ **Direct HID Communication**: Uses `hidapi` for low-latency control.
+✅ **Application Logging**: Diagnostics available in `~/Library/Logs/open_razer_macos_control_app.log`.
 
 ---
 
 ## 📦 Supported Devices
-The application attempts to communicate with the following devices. Functionality may vary.
+The application supports a vast range of devices, including but not limited to:
+- **Mice**: DeathAdder (Chroma, Elite, V2, V3), Basilisk (V2, V3, Ultimate), Viper (Ultimate, Mini, 8K), Naga (Trinity, Pro, X), Mamba, Orochi, etc.
+- **Keyboards**: BlackWidow (Chroma, Elite, V3, V4), Huntsman (Elite, Mini, V2), Ornata, Cynosa, DeathStalker.
+- **Laptops**: Razer Blade Stealth, Blade 14/15/17 (various years).
+- **Accessories**: Mouse Bungees, Headset Stands, Mouse Mats (Firefly, Goliathus).
 
-| Device Model                   | PID      | Supported Features (Tested Effects)       |
-|--------------------------------|----------|-------------------------------------------|
-| Razer Basilisk V3 X HyperSpeed | 0x00B9   | Scroll wheel LED (Static, Breathing, etc.)|
-| Razer BlackWidow V3 Pro (Wired)| 0x025A   | Keyboard backlight (Static, Breathing, etc.)|
-| Razer BlackWidow V3 Pro (Wireless)| 0x025C | Keyboard backlight (Static, Breathing, etc.)|
-| Razer DeathAdder Chroma        | 0x0A00   | *Untested* - Likely mouse LEDs            |
-| Razer Mamba Chroma             | 0x0A01   | *Untested* - Likely mouse LEDs            |
-| Razer Cynosa Chroma            | 0x0A02   | *Untested* - Likely keyboard backlight    |
-| Razer Tartarus Chroma          | 0x0A03   | *Untested* - Likely keypad backlight      |
-
-*Testing and feedback on untested devices are welcome!*
-
----
-
-## 🗺️ Roadmap (Contributions Welcome!)
-- 🔍 **Expand Device Support & Testing**
-- 🎨 **Refine RGB Effects**: Customize parameters, improve compatibility
-- ⌨️ **Key Remapping & Macros**
-- 🔋 **Battery Monitoring** for wireless devices
-- 🖥️ **Improve GUI**: Enhance usability, potentially move to Menu Bar
-- 🐍 **Code Refactoring** for stability and maintainability
-
----
-
-## ⚙️ Features (Current Application)
-✅ Detects known Razer devices (Vendor ID `0x1532`, specific PIDs) via `hidapi`
-✅ Graphical User Interface (GUI) for device selection and effect configuration
-✅ Sets **Static, Breathing, Wave, and Reactive** RGB effects via HID commands
-✅ Option to reset/turn off effects
-✅ Basic application logging (`~/Library/Logs/open_razer_macos_control_app.log` or `~/open_razer_macos_control_app.log`)
+*Note: While definitions for these devices are included, specific feature support (e.g. unique matrix effects) may vary.*
 
 ---
 
 ## 🔧 Requirements
-- **macOS** (Tested setup)
+- **macOS** (Tested on recent versions)
 - **Python 3.8+**
 - **`hidapi` system library**
-    - macOS: `brew install hidapi`
-- **Python dependencies** (see `requirements.txt`): [cite: 1]
-    - `PyQt5>=5.15` [cite: 1]
-    - `hidapi>=0.14.0` [cite: 1]
+    - Install via Homebrew: `brew install hidapi`
+- **Python dependencies** (see `requirements.txt`):
+    - `PyQt5>=5.15`
+    - `hidapi>=0.14.0`
 
 ---
 
 ## 🚀 Quick Start
+
 1.  **Install system dependency**:
     ```bash
     brew install hidapi
     ```
-2.  **Clone the repository (or ensure you have the code files)**
+
+2.  **Clone the repository**:
     ```bash
-    # Example cloning command if you have a repository URL:
-    # git clone <repository_URL> open-razer-macos-control
-    ```
-3.  **Navigate to the project directory (e.g., `open-razer-macos-control`)**
-    ```bash
+    git clone https://github.com/your-username/open-razer-macos-control.git
     cd open-razer-macos-control
     ```
-4.  **(Recommended) Create and activate a virtual environment:**
+
+3.  **(Recommended) Create and activate a virtual environment**:
     ```bash
     python3 -m venv venv
     source venv/bin/activate
     ```
-5.  **Install Python dependencies**:
+
+4.  **Install Python dependencies**:
     ```bash
     pip install -r requirements.txt
     ```
-6.  **Run the application**:
+
+5.  **Run the application**:
     ```bash
     python3 main.py
     ```
-7.  **Permission issues?**
-    - Accessing HID devices on macOS might require special permissions or occasionally running with `sudo python3 main.py`, though this is generally discouraged. Ensure your user has the necessary permissions first. Check System Settings -> Privacy & Security -> Input Monitoring if issues persist.
+
+    *Note: If you encounter permission errors accessing the device, you may need to grant "Input Monitoring" permissions to your terminal or IDE in System Settings -> Privacy & Security.*
+
+---
+
+## 🗺️ Roadmap
+- 🔍 **Fine-tune Matrix Effects**: Improve custom effect support for advanced keyboards.
+- ⌨️ **Key Remapping & Macros**: Implement software-side macro handling.
+- 🔋 **Battery Monitoring**: Visualize battery levels for wireless devices.
+- 🖥️ **Menu Bar App**: Minimize to tray for quick access.
+- 🔄 **Auto-Updates**: Keep device definitions in sync with upstream.
 
 ---
 
 ## 🤝 Contributing
-We need your skills! Help with:
-- **Protocol reverse-engineering** (USB captures welcome!)
-- **Feature development** (GUI improvements, macros, etc.)
-- **Testing** (report device compatibility and bugs!)
-- **Code cleanup and documentation**
+Contributions are welcome!
+- **Testing**: Report which devices work perfectly and which need tweaks.
+- **Code**: Submit PRs for new features or bug fixes.
+- **Reverse Engineering**: Help decode protocols for unsupported features.
 
 **Steps**:
-1.  Check/open [GitHub Issues](https://github.com/your-repo/issues) (Replace with your actual repo link if available)
-2.  Fork the repository and create a feature branch.
-3.  Submit Pull Requests with clear descriptions of changes.
-4.  Follow [PEP8](https://peps.python.org/pep-0008/) for Python code style.
+1.  Fork the repository.
+2.  Create a feature branch.
+3.  Submit a Pull Request.
 
 ---
 
-## ⚠️ Limitations
-- Only supports devices explicitly listed or using similar protocols.
-- Tested primarily on macOS.
-- No Bluetooth support.
-- Error handling is basic.
-- Effect appearance might differ slightly between device models.
-- **Use at your own risk** — interacting directly with hardware carries inherent risks!
+## 🐧 Credits & Acknowledgements
 
----
-
-## 🐧 Credits
-
-This project is directly inspired by the groundbreaking work of:
-OpenRazer for Linux
-[OpenRazer](https://github.com/openrazer/openrazer)
+This project stands on the shoulders of giants.
+Huge thanks to the **[OpenRazer](https://github.com/openrazer/openrazer)** project for their extensive reverse engineering and hardware definitions, which power the device support in this application.
 
 ---
 
 ## 📜 License
-[GNU General Public License v3.0](LICENSE) (Assuming you have a LICENSE file with GPLv3)
+[GNU General Public License v3.0](LICENSE)
 *This project is not affiliated with Razer Inc.*
