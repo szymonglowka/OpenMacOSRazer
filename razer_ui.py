@@ -114,7 +114,7 @@ class MainWindow(QMainWindow):
             cmd_class = KBD_CMD_CLASS
             cmd_id = KBD_CMD_ID
         else:
-            QMessageBox.warning(self, "Error", "Unsupported device.")
+            QMessageBox.warning(self, "Error", "Device type not fully supported yet.")
             return
         args = build_arguments(effect_code, led_id, extra)
         report = construct_razer_report(transaction_id, cmd_class, cmd_id, data_size, args)
@@ -307,7 +307,7 @@ class MainWindow(QMainWindow):
             cmd_class = KBD_CMD_CLASS
             cmd_id = KBD_CMD_ID
         else:
-            QMessageBox.warning(self, "Error", "Unsupported device.")
+            QMessageBox.warning(self, "Error", "Device type not fully supported yet.")
             return
         args = build_arguments(effect_code, led_id, [])
         report = construct_razer_report(transaction_id, cmd_class, cmd_id, data_size, args)

@@ -257,6 +257,10 @@ RAZER_DEVICES = {
     0x0F20: "Razer Base Station V2 Chroma",
     0x0F21: "Razer Thunderbolt 4 Dock Chroma",
     0x0F26: "Razer Charging Pad Chroma",
+    0x0A00: "Razer DeathAdder Chroma",
+    0x0A01: "Razer Mamba Chroma",
+    0x0A02: "Razer Cynosa Chroma",
+    0x0A03: "Razer Tartarus Chroma",
     0x0F2B: "Razer Laptop Stand Chroma V2",
 }
 
@@ -375,6 +379,10 @@ RAZER_DEVICE_TYPES = {
     0x02C6: 'keyboard',
     0x02C7: 'keyboard',
     0x0A24: 'keyboard',
+    0x0A00: 'mouse',
+    0x0A01: 'mouse',
+    0x0A02: 'keyboard',
+    0x0A03: 'keyboard',
     0x0013: 'mouse',
     0x0015: 'mouse',
     0x0016: 'mouse',
@@ -711,6 +719,10 @@ RAZER_TRANSACTION_IDS = {
     0x02C5: 0xFF,
     0x02C6: 0xFF,
     0x02C7: 0xFF,
+    0x0A00: 0x1F,
+    0x0A01: 0x1F,
+    0x0A02: 0x3F,
+    0x0A03: 0x3F,
     0x0A24: 0x1F,
 }
 
@@ -809,12 +821,6 @@ def build_arguments(effect_code: int, led_id: int, extra_params: list) -> list:
     return [VARSTORE, led_id, effect_code, 0x00, 0x00, 0x01] + extra_params
 
 def send_report_to_device(selected_device: dict, report: bytes, command_desc: str) -> bool:
-    # If the report was constructed with a placeholder transaction ID (0x00 or similar),
-    # we might want to update it here if 'selected_device' has the correct one.
-    # However, 'construct_razer_report' is usually called with a specific transaction_id.
-    # The UI layer calling this should pass the correct transaction_id to 'construct_razer_report'.
-    # But since 'report' is bytes, we can't easily modify it here safely without parsing.
-    # Assuming the caller has used get_transaction_id(pid) when constructing the report.
 
     report_with_id = b'\x00' + report
     success = False
