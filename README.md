@@ -51,7 +51,6 @@ The application attempts to communicate with the following devices. Functionalit
 ✅ Graphical User Interface (GUI) for device selection and effect configuration
 ✅ Sets **Static, Breathing, Wave, and Reactive** RGB effects via HID commands
 ✅ Option to reset/turn off effects
-✅ **Developer Mode**: Verbose logging and scanning of all connected Razer devices (supported or not) to aid in adding new hardware support.
 ✅ Basic application logging (`~/Library/Logs/open_razer_macos_control_app.log` or `~/open_razer_macos_control_app.log`)
 
 ---
@@ -92,28 +91,10 @@ The application attempts to communicate with the following devices. Functionalit
     ```
 6.  **Run the application**:
     ```bash
-    # Standard Mode (Logs to file only)
     python3 main.py
-
-    # Developer Mode (Verbose console logs + Lists ALL Razer devices)
-    # Use this if your device is not showing up!
-    python3 main.py --debug
     ```
 7.  **Permission issues?**
     - Accessing HID devices on macOS might require special permissions or occasionally running with `sudo python3 main.py`, though this is generally discouraged. Ensure your user has the necessary permissions first. Check System Settings -> Privacy & Security -> Input Monitoring if issues persist.
-
----
-
-## 🔍 Diagnosing Unsupported Devices
-If your Razer device is connected but not showing up in the list:
-1. Run the application in **Debug Mode**:
-   ```bash
-   python3 main.py --debug
-   ```
-2. Check the terminal output. Look for lines starting with `Device found:`.
-   - Example: `Device found: PID=0x025A, Product='Razer BlackWidow V3 Pro Wired', Interface=0, ...`
-3. Note the **PID** (e.g., `0x025A`) of your device.
-4. Open an Issue (or create a Pull Request) with this PID and the device name so we can add support!
 
 ---
 

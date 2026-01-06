@@ -2,7 +2,6 @@
 
 import time
 import hid
-import logging
 
 RAZER_VID = 0x1532
 
@@ -76,20 +75,10 @@ def construct_razer_report(transaction_id: int, command_class: int, command_id: 
     report[89] = 0x00
     return bytes(report)
 
-def scan_razer_devices(debug_mode: bool = False) -> list:
+def scan_razer_devices() -> list:
     devices_grouped = {}
     try:
         all_devices = hid.enumerate(RAZER_VID, 0x0)
-
-        if debug_mode:
-            logging.debug(f"Found {len(all_devices)} devices with Razer VID (0x{RAZER_VID:04X})")
-            for dev in all_devices:
-                pid = dev['product_id']
-                prod_str = dev.get('product_string', 'N/A')
-                interface_num = dev.get('interface_number', -1)
-                path = dev.get('path', b'').decode('utf-8', errors='ignore') if isinstance(dev.get('path'), bytes) else dev.get('path', 'N/A')
-                logging.debug(f"Device found: PID=0x{pid:04X}, Product='{prod_str}', Interface={interface_num}, Path={path}")
-
         if not all_devices:
             return []
         parameterized_pids = set(RAZER_DEVICES.keys())
@@ -115,7 +104,7 @@ def scan_razer_devices(debug_mode: bool = False) -> list:
                 'interface_number': interface_num
             })
     except Exception as e:
-        logging.error(f"Error scanning devices: {e}")
+        print("Error scanning devices:", e)
         return []
     return list(devices_grouped.values())
 
