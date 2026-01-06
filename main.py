@@ -60,6 +60,17 @@ def main():
 
     setup_logging(debug_mode)
 
+    # In debug mode, scan and log devices immediately.
+    # This ensures that even if the GUI crashes (e.g. PyQt plugin issues),
+    # the user still gets the PID information they need.
+    if debug_mode:
+        logging.info("Debug mode: performing early device scan...")
+        try:
+            from razer_common import scan_razer_devices
+            scan_razer_devices(debug_mode=True)
+        except Exception as e:
+            logging.error(f"Early scan failed: {e}")
+
     try:
         logging.info("Importing UI modules...")
         from PyQt5.QtWidgets import QApplication
