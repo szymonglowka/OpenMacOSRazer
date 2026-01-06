@@ -111,9 +111,10 @@ def main():
                     break
 
             if found_plugin_dir:
-                # Explicitly tell Qt where to find plugins
-                logging.info(f"Adding library path: {found_plugin_dir}")
-                QCoreApplication.addLibraryPath(found_plugin_dir)
+                # Explicitly tell Qt where to find plugins.
+                # using setLibraryPaths instead of addLibraryPath to force priority.
+                logging.info(f"Setting library paths to: {[found_plugin_dir]}")
+                QCoreApplication.setLibraryPaths([found_plugin_dir])
 
                 # Also set env var for good measure (though SIP might strip it)
                 if 'QT_PLUGIN_PATH' not in os.environ:
