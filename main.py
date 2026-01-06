@@ -63,8 +63,49 @@ def main():
     try:
         logging.info("Importing UI modules...")
         from PyQt5.QtWidgets import QApplication
+        from PyQt5.QtCore import QLibraryInfo
+        import PyQt5
         from razer_ui import MainWindow
         logging.info("Imports completed successfully.")
+
+        # Attempt to fix missing plugin issue on macOS
+        if sys.platform == 'darwin':
+            logging.info("Checking Qt plugins configuration for macOS...")
+
+            # Method 1: Ask QLibraryInfo
+            plugin_path = QLibraryInfo.location(QLibraryInfo.PluginsPath)
+            logging.info(f"QLibraryInfo.PluginsPath: {plugin_path}")
+
+            # Method 2: Check relative to PyQt5 package (often robust in venvs)
+            pkg_path = os.path.dirname(PyQt5.__file__)
+            logging.info(f"PyQt5 package path: {pkg_path}")
+
+            potential_paths = []
+            if plugin_path:
+                potential_paths.append(plugin_path)
+
+            # Common layouts
+            potential_paths.extend([
+                os.path.join(pkg_path, 'Qt5', 'plugins'),
+                os.path.join(pkg_path, 'Qt', 'plugins'),
+                os.path.join(pkg_path, 'plugins'),
+            ])
+
+            found_plugin_path = None
+            for p in potential_paths:
+                cocoa_path = os.path.join(p, 'platforms', 'libqcocoa.dylib')
+                if os.path.exists(cocoa_path):
+                    logging.info(f"Found 'libqcocoa.dylib' at: {cocoa_path}")
+                    found_plugin_path = p
+                    break
+                else:
+                    logging.debug(f"Checked for cocoa plugin at {cocoa_path} (not found)")
+
+            if found_plugin_path:
+                logging.info(f"Setting QT_QPA_PLATFORM_PLUGIN_PATH to: {found_plugin_path}")
+                os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = found_plugin_path
+            else:
+                logging.warning("Could not locate 'libqcocoa.dylib'. Application might fail to start if plugins are missing.")
 
         logging.info("Creating QApplication...")
         app = QApplication(sys.argv)
