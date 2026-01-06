@@ -821,12 +821,6 @@ def build_arguments(effect_code: int, led_id: int, extra_params: list) -> list:
     return [VARSTORE, led_id, effect_code, 0x00, 0x00, 0x01] + extra_params
 
 def send_report_to_device(selected_device: dict, report: bytes, command_desc: str) -> bool:
-    # If the report was constructed with a placeholder transaction ID (0x00 or similar),
-    # we might want to update it here if 'selected_device' has the correct one.
-    # However, 'construct_razer_report' is usually called with a specific transaction_id.
-    # The UI layer calling this should pass the correct transaction_id to 'construct_razer_report'.
-    # But since 'report' is bytes, we can't easily modify it here safely without parsing.
-    # Assuming the caller has used get_transaction_id(pid) when constructing the report.
 
     report_with_id = b'\x00' + report
     success = False
