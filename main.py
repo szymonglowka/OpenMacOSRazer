@@ -63,7 +63,7 @@ def main():
     try:
         logging.info("Importing UI modules...")
         from PyQt5.QtWidgets import QApplication
-        from PyQt5.QtCore import QLibraryInfo
+        from PyQt5.QtCore import QLibraryInfo, QCoreApplication
         import PyQt5
         from razer_ui import MainWindow
         logging.info("Imports completed successfully.")
@@ -124,10 +124,6 @@ def main():
                     logging.info(f"Setting QT_PLUGIN_PATH to: {found_plugin_dir}")
                     env_updates['QT_PLUGIN_PATH'] = found_plugin_dir
 
-                if found_platforms_dir:
-                    logging.info(f"Setting QT_QPA_PLATFORM_PLUGIN_PATH to: {found_platforms_dir}")
-                    env_updates['QT_QPA_PLATFORM_PLUGIN_PATH'] = found_platforms_dir
-
                 if found_lib_dir:
                     current_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
                     new_dyld = f"{found_lib_dir}:{current_dyld}" if current_dyld else found_lib_dir
@@ -153,13 +149,19 @@ def main():
                         os.execvpe(sys.executable, [sys.executable] + sys.argv, env)
                     except OSError as e:
                         logging.error(f"Failed to restart application: {e}")
-                        # Fallback: try setting os.environ locally and proceed (though DYLD vars won't help for loaded libs)
+                        # Fallback: try setting os.environ locally
                         os.environ.update(env_updates)
             else:
                 logging.info("Environment variables applied via restart.")
-                # As a backup, add library path to CoreApplication
-                if 'QT_PLUGIN_PATH' in os.environ:
-                    QApplication.addLibraryPath(os.environ['QT_PLUGIN_PATH'])
+
+            # Explicitly add library paths to Qt (works even if env vars are stripped by SIP)
+            if 'QT_PLUGIN_PATH' in os.environ:
+                logging.info(f"Adding library path from environment: {os.environ['QT_PLUGIN_PATH']}")
+                QCoreApplication.addLibraryPath(os.environ['QT_PLUGIN_PATH'])
+            elif 'found_plugin_dir' in locals() and found_plugin_dir:
+                 # Should not happen in restart branch unless we re-detect, but safe to add
+                 logging.info(f"Adding library path from detection: {found_plugin_dir}")
+                 QCoreApplication.addLibraryPath(found_plugin_dir)
 
         logging.info("Creating QApplication...")
         app = QApplication(sys.argv)
