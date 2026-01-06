@@ -131,9 +131,18 @@ def main():
 
                 env_updates = {}
 
-                if found_plugin_dir:
+                # Only set variables if they aren't already set, to respect user overrides
+                if found_plugin_dir and 'QT_PLUGIN_PATH' not in os.environ:
                     logging.info(f"Setting QT_PLUGIN_PATH to: {found_plugin_dir}")
                     env_updates['QT_PLUGIN_PATH'] = found_plugin_dir
+
+                if found_platforms_dir and 'QT_QPA_PLATFORM_PLUGIN_PATH' not in os.environ:
+                    logging.info(f"Setting QT_QPA_PLATFORM_PLUGIN_PATH to: {found_platforms_dir}")
+                    env_updates['QT_QPA_PLATFORM_PLUGIN_PATH'] = found_platforms_dir
+
+                if debug_mode and 'QT_DEBUG_PLUGINS' not in os.environ:
+                    logging.info("Enabling QT_DEBUG_PLUGINS for debug mode")
+                    env_updates['QT_DEBUG_PLUGINS'] = '1'
 
                 if found_lib_dir:
                     current_dyld = os.environ.get('DYLD_LIBRARY_PATH', '')
