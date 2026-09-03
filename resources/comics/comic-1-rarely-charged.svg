@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" font-family="'SF Pro Display', -apple-system, system-ui, 'Segoe UI', Helvetica, sans-serif">
+  <defs>
+    <filter id="panelShadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.06"/>
+    </filter>
+    <clipPath id="titleClip"><rect width="1000" height="52" rx="14"/></clipPath>
+    <linearGradient id="redGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Canvas -->
+  <rect width="1000" height="420" rx="14" fill="#F8FAFC"/>
+
+  <!-- Title Bar -->
+  <rect width="1000" height="52" rx="14" fill="url(#redGrad)" clip-path="url(#titleClip)"/>
+  <rect y="28" width="1000" height="24" fill="url(#redGrad)"/>
+  <text x="500" y="34" text-anchor="middle" fill="white" font-size="19" font-weight="700" letter-spacing="0.3">Lesson 1: "Critical Battery"</text>
+
+  <!-- Panel 1: Mouse dying on desk -->
+  <g filter="url(#panelShadow)">
+    <rect x="16" y="64" width="230" height="296" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  </g>
+
+  <!-- P1: Teacher worried -->
+  <g transform="translate(75,205)">
+    <!-- Body -->
+    <rect x="-16" y="42" width="32" height="44" rx="9" fill="#2D8B6F" stroke="#334155" stroke-width="2"/>
+    <!-- Head -->
+    <circle cx="0" cy="16" r="24" fill="#D4A574" stroke="#334155" stroke-width="2"/>
+    <!-- Hair -->
+    <path d="M-20,-6 Q-14,-20 0,-18 Q14,-20 20,-6" fill="#5C3D2E" stroke="#334155" stroke-width="1.5"/>
+    <rect x="-20" y="-8" width="40" height="6" rx="3" fill="#5C3D2E"/>
+    <!-- Glasses -->
+    <rect x="-14" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <rect x="3" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <line x1="-3" y1="10" x2="3" y2="10" stroke="#334155" stroke-width="1.5"/>
+    <!-- Worried eyes -->
+    <circle cx="-8" cy="11" r="2" fill="#334155"/>
+    <circle cx="8" cy="11" r="2" fill="#334155"/>
+    <!-- Worried brows -->
+    <line x1="-14" y1="3" x2="-5" y2="6" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+    <line x1="14" y1="3" x2="5" y2="6" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+    <!-- Worried mouth -->
+    <path d="M-5,28 Q0,25 5,28" fill="none" stroke="#334155" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Sweat drop -->
+    <ellipse cx="22" cy="12" rx="2.5" ry="4" fill="#93C5FD" stroke="#334155" stroke-width="1"/>
+  </g>
+
+  <!-- P1: Desk -->
+  <rect x="36" y="310" width="190" height="8" rx="4" fill="#94A3B8" stroke="#64748B" stroke-width="1"/>
+
+  <!-- P1: Mouse on desk -->
+  <g transform="translate(170,293)">
+    <ellipse cx="0" cy="0" rx="20" ry="12" fill="#404040" stroke="#334155" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-8" rx="7" ry="4" fill="#555"/>
+  </g>
+
+  <!-- P1: Red battery above mouse (clear of speech area) -->
+  <g transform="translate(155,90)">
+    <rect x="0" y="6" width="22" height="38" rx="4" fill="none" stroke="#EF4444" stroke-width="2.5"/>
+    <rect x="6" y="0" width="10" height="7" rx="3" fill="#EF4444"/>
+    <rect x="4" y="34" width="14" height="6" rx="1.5" fill="#EF4444" opacity="0.85"/>
+    <!-- Pulse lines -->
+    <line x1="-6" y1="22" x2="-11" y2="20" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    <line x1="-6" y1="28" x2="-11" y2="30" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    <line x1="28" y1="22" x2="33" y2="20" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    <line x1="28" y1="28" x2="33" y2="30" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    <text x="11" y="55" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="700">3%</text>
+  </g>
+
+  <!-- P1: Caption -->
+  <text x="131" y="346" text-anchor="middle" fill="#94A3B8" font-size="11" font-style="italic">*cursor stuttering*</text>
+
+  <!-- Panel 2: Teacher explaining -->
+  <g filter="url(#panelShadow)">
+    <rect x="258" y="64" width="230" height="296" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  </g>
+
+  <!-- P2: Speech bubble (positioned at top) -->
+  <rect x="274" y="76" width="198" height="72" rx="10" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <polygon points="350,148 360,162 370,148" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="348" y="146" width="24" height="4" fill="white"/>
+  <text x="373" y="98" text-anchor="middle" fill="#1E293B" font-size="13" font-weight="600">Class, when it's at 3%</text>
+  <text x="373" y="118" text-anchor="middle" fill="#EF4444" font-size="16" font-weight="800">it's CRITICAL!</text>
+  <text x="373" y="136" text-anchor="middle" fill="#64748B" font-size="11" font-weight="500">Plug it in immediately!</text>
+
+  <!-- P2: Teacher panicking -->
+  <g transform="translate(373,230)">
+    <rect x="-16" y="42" width="32" height="44" rx="9" fill="#2D8B6F" stroke="#334155" stroke-width="2"/>
+    <!-- Arms up -->
+    <line x1="-16" y1="50" x2="-34" y2="25" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="16" y1="50" x2="34" y2="25" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="-36" cy="23" r="5" fill="#D4A574" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="36" cy="23" r="5" fill="#D4A574" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="0" cy="16" r="24" fill="#D4A574" stroke="#334155" stroke-width="2"/>
+    <path d="M-20,-6 Q-14,-20 0,-18 Q14,-20 20,-6" fill="#5C3D2E" stroke="#334155" stroke-width="1.5"/>
+    <rect x="-20" y="-8" width="40" height="6" rx="3" fill="#5C3D2E"/>
+    <rect x="-14" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <rect x="3" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <line x1="-3" y1="10" x2="3" y2="10" stroke="#334155" stroke-width="1.5"/>
+    <!-- Wide eyes -->
+    <circle cx="-8" cy="10" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="8" cy="10" r="4" fill="white" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="-7" cy="10" r="2" fill="#334155"/>
+    <circle cx="9" cy="10" r="2" fill="#334155"/>
+    <!-- Open mouth -->
+    <ellipse cx="0" cy="29" rx="7" ry="5" fill="#7F1D1D" stroke="#334155" stroke-width="1.5"/>
+  </g>
+
+  <!-- Panel 3: Plugging in -->
+  <g filter="url(#panelShadow)">
+    <rect x="500" y="64" width="240" height="296" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  </g>
+
+  <!-- P3: Speech bubble (top left of panel) -->
+  <rect x="516" y="78" width="152" height="50" rx="8" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <polygon points="560,128 568,140 576,128" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="558" y="126" width="20" height="4" fill="white"/>
+  <text x="592" y="99" text-anchor="middle" fill="#1E293B" font-size="12" font-weight="600">Now we plug in</text>
+  <text x="592" y="118" text-anchor="middle" fill="#F97316" font-size="14" font-weight="800">and CHARGE!</text>
+
+  <!-- P3: Charging battery (top right, clear of bubble) -->
+  <g transform="translate(690,82)">
+    <rect x="0" y="6" width="26" height="44" rx="5" fill="none" stroke="#F97316" stroke-width="2.5"/>
+    <rect x="7" y="0" width="12" height="8" rx="3" fill="#F97316"/>
+    <rect x="4" y="36" width="18" height="10" rx="2" fill="#F97316" opacity="0.6"/>
+    <!-- Lightning bolt -->
+    <polygon points="16,10 9,26 13,26 8,42 19,22 14,22 18,10" fill="#F97316" stroke="#334155" stroke-width="0.8"/>
+  </g>
+
+  <!-- P3: Cable -->
+  <path d="M560,285 Q545,285 545,270 Q545,252 558,252" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- P3: Mouse charging -->
+  <g transform="translate(600,278)">
+    <ellipse cx="0" cy="0" rx="20" ry="12" fill="#404040" stroke="#334155" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-8" rx="7" ry="4" fill="#555"/>
+  </g>
+
+  <!-- P3: Teacher relieved -->
+  <g transform="translate(555,195)">
+    <rect x="-14" y="38" width="28" height="40" rx="8" fill="#2D8B6F" stroke="#334155" stroke-width="1.8"/>
+    <circle cx="0" cy="14" r="20" fill="#D4A574" stroke="#334155" stroke-width="1.8"/>
+    <path d="M-16,-4 Q-10,-14 0,-12 Q10,-14 16,-4" fill="#5C3D2E" stroke="#334155" stroke-width="1.2"/>
+    <rect x="-16" y="-6" width="32" height="5" rx="2.5" fill="#5C3D2E"/>
+    <rect x="-11" y="5" width="9" height="8" rx="2.5" fill="none" stroke="#334155" stroke-width="1.5"/>
+    <rect x="2" y="5" width="9" height="8" rx="2.5" fill="none" stroke="#334155" stroke-width="1.5"/>
+    <line x1="-2" y1="9" x2="2" y2="9" stroke="#334155" stroke-width="1.2"/>
+    <circle cx="-6" cy="9" r="1.8" fill="#334155"/>
+    <circle cx="6" cy="9" r="1.8" fill="#334155"/>
+    <path d="M-4,24 Q0,28 4,24" fill="none" stroke="#334155" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Panel 4: Fully charged -->
+  <g filter="url(#panelShadow)">
+    <rect x="752" y="64" width="232" height="296" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  </g>
+
+  <!-- P4: Speech bubble (left side of panel) -->
+  <rect x="762" y="78" width="145" height="50" rx="8" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <polygon points="820,128 828,140 836,128" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="818" y="126" width="20" height="4" fill="white"/>
+  <text x="834" y="98" text-anchor="middle" fill="#1E293B" font-size="12" font-weight="600">The "Fully Loaded"</text>
+  <text x="834" y="118" text-anchor="middle" fill="#22C55E" font-size="14" font-weight="800">is done!</text>
+
+  <!-- P4: Green battery full (right side, clear of bubble) -->
+  <g transform="translate(920,80)">
+    <rect x="0" y="6" width="26" height="44" rx="5" fill="none" stroke="#22C55E" stroke-width="2.5"/>
+    <rect x="7" y="0" width="12" height="8" rx="3" fill="#22C55E"/>
+    <rect x="4" y="10" width="18" height="10" rx="2" fill="#22C55E"/>
+    <rect x="4" y="23" width="18" height="10" rx="2" fill="#22C55E"/>
+    <rect x="4" y="36" width="18" height="10" rx="2" fill="#22C55E"/>
+    <!-- Sparkles -->
+    <circle cx="-7" cy="15" r="2" fill="#EAB308" opacity="0.7"/>
+    <circle cx="35" cy="30" r="2.5" fill="#EAB308" opacity="0.7"/>
+    <circle cx="-5" cy="40" r="1.5" fill="#EAB308" opacity="0.5"/>
+    <text x="13" y="62" text-anchor="middle" fill="#22C55E" font-size="11" font-weight="700">100%</text>
+  </g>
+
+  <!-- P4: Teacher happy -->
+  <g transform="translate(830,200)">
+    <rect x="-16" y="42" width="32" height="44" rx="9" fill="#2D8B6F" stroke="#334155" stroke-width="2"/>
+    <circle cx="0" cy="16" r="24" fill="#D4A574" stroke="#334155" stroke-width="2"/>
+    <path d="M-20,-6 Q-14,-20 0,-18 Q14,-20 20,-6" fill="#5C3D2E" stroke="#334155" stroke-width="1.5"/>
+    <rect x="-20" y="-8" width="40" height="6" rx="3" fill="#5C3D2E"/>
+    <rect x="-14" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <rect x="3" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <line x1="-3" y1="10" x2="3" y2="10" stroke="#334155" stroke-width="1.5"/>
+    <!-- Happy squint eyes -->
+    <path d="M-12,9 Q-8,5 -4,9" fill="none" stroke="#334155" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M4,9 Q8,5 12,9" fill="none" stroke="#334155" stroke-width="2.2" stroke-linecap="round"/>
+    <!-- Big smile -->
+    <path d="M-8,26 Q0,34 8,26" fill="none" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- P4: Whiteboard -->
+  <g transform="translate(768,290)">
+    <rect x="0" y="0" width="145" height="58" rx="6" fill="white" stroke="#94A3B8" stroke-width="2"/>
+    <rect x="3" y="3" width="139" height="52" rx="4" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+    <text x="72" y="20" text-anchor="middle" fill="#334155" font-size="10" font-weight="700">Today's Lesson</text>
+    <line x1="12" y1="25" x2="133" y2="25" stroke="#E2E8F0" stroke-width="1"/>
+    <text x="72" y="38" text-anchor="middle" fill="#64748B" font-size="9">Critical Battery</text>
+    <text x="72" y="50" text-anchor="middle" fill="#EF4444" font-size="9" font-weight="600">0-10% = RED alert</text>
+  </g>
+
+  <!-- Bottom Bar -->
+  <rect y="372" width="1000" height="48" rx="0" fill="#1E293B"/>
+  <rect y="406" width="1000" height="14" rx="14" fill="#1E293B"/>
+  <text x="500" y="396" text-anchor="middle" fill="#94A3B8" font-size="12" font-weight="500">
+    Critical (0-10%) <tspan fill="#EF4444" font-weight="700">RED</tspan>
+    <tspan fill="#64748B" dx="8">--></tspan>
+    <tspan fill="#94A3B8" dx="8">Charging Low</tspan>
+    <tspan fill="#F97316" font-weight="700"> ORANGE bolt</tspan>
+    <tspan fill="#64748B" dx="8">--></tspan>
+    <tspan fill="#94A3B8" dx="8">Fully Charged</tspan>
+    <tspan fill="#22C55E" font-weight="700"> GREEN</tspan>
+  </text>
+</svg>

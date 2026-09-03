@@ -89,27 +89,24 @@ class MainWindow(QMainWindow):
         layout.addRow(btn)
         return tab
 
-    def send_static(self):
+    def _send_effect(self, mouse_effect, kbd_effect, effect_name, extra, success_msg=None):
+        """Shared logic for sending an LED effect to the selected device."""
         device = self.get_selected_device()
         if not device:
             QMessageBox.warning(self, "Error", "No device selected.")
             return
-        r = self.static_spin_r.value()
-        g = self.static_spin_g.value()
-        b = self.static_spin_b.value()
-        extra = [r, g, b]
         pid = device['pid']
         transaction_id = device['transaction_id']
 
         if is_mouse_device(pid):
             led_id = MOUSE_SCROLL_WHEEL_LED
-            effect_code = MOUSE_EFFECT_STATIC
+            effect_code = mouse_effect
             data_size = MOUSE_DATA_SIZE
             cmd_class = MOUSE_CMD_CLASS
             cmd_id = MOUSE_CMD_ID
         elif is_keyboard_device(pid):
             led_id = KBD_BACKLIGHT_LED
-            effect_code = KBD_EFFECT_STATIC
+            effect_code = kbd_effect
             data_size = KBD_DATA_SIZE
             cmd_class = KBD_CMD_CLASS
             cmd_id = KBD_CMD_ID
@@ -118,10 +115,20 @@ class MainWindow(QMainWindow):
             return
         args = build_arguments(effect_code, led_id, extra)
         report = construct_razer_report(transaction_id, cmd_class, cmd_id, data_size, args)
-        if send_report_to_device(device, report, "Static Effect"):
-            QMessageBox.information(self, "Success", f"Color set to ({r}, {g}, {b}).")
+        if send_report_to_device(device, report, effect_name):
+            QMessageBox.information(self, "Success", success_msg or f"{effect_name} sent.")
         else:
-            QMessageBox.warning(self, "Error", "Failed to send effect.")
+            QMessageBox.warning(self, "Error", f"Failed to send {effect_name.lower()}.")
+
+    def send_static(self):
+        r = self.static_spin_r.value()
+        g = self.static_spin_g.value()
+        b = self.static_spin_b.value()
+        self._send_effect(
+            MOUSE_EFFECT_STATIC, KBD_EFFECT_STATIC,
+            "Static Effect", [r, g, b],
+            success_msg=f"Color set to ({r}, {g}, {b}).",
+        )
 
     def create_tab_breathing(self):
         tab = QWidget()
@@ -146,38 +153,13 @@ class MainWindow(QMainWindow):
         return tab
 
     def send_breathing(self):
-        device = self.get_selected_device()
-        if not device:
-            QMessageBox.warning(self, "Error", "No device selected.")
-            return
         base = [self.breathing_base_r.value(), self.breathing_base_g.value(), self.breathing_base_b.value()]
         extra_color = [self.breathing_extra_r.value(), self.breathing_extra_g.value(), self.breathing_extra_b.value()]
         speed = self.breathing_speed.value()
-        extra = base + extra_color + [speed]
-        pid = device['pid']
-        transaction_id = device['transaction_id']
-
-        if is_mouse_device(pid):
-            led_id = MOUSE_SCROLL_WHEEL_LED
-            effect_code = MOUSE_EFFECT_BREATHING
-            data_size = MOUSE_DATA_SIZE
-            cmd_class = MOUSE_CMD_CLASS
-            cmd_id = MOUSE_CMD_ID
-        elif is_keyboard_device(pid):
-            led_id = KBD_BACKLIGHT_LED
-            effect_code = KBD_EFFECT_BREATHING
-            data_size = KBD_DATA_SIZE
-            cmd_class = KBD_CMD_CLASS
-            cmd_id = KBD_CMD_ID
-        else:
-            QMessageBox.warning(self, "Error", "Unsupported device.")
-            return
-        args = build_arguments(effect_code, led_id, extra)
-        report = construct_razer_report(transaction_id, cmd_class, cmd_id, data_size, args)
-        if send_report_to_device(device, report, "Breathing Effect"):
-            QMessageBox.information(self, "Success", "Breathing effect sent.")
-        else:
-            QMessageBox.warning(self, "Error", "Failed to send effect.")
+        self._send_effect(
+            MOUSE_EFFECT_BREATHING, KBD_EFFECT_BREATHING,
+            "Breathing Effect", base + extra_color + [speed],
+        )
 
     def create_tab_wave(self):
         tab = QWidget()
@@ -197,37 +179,12 @@ class MainWindow(QMainWindow):
         return tab
 
     def send_wave(self):
-        device = self.get_selected_device()
-        if not device:
-            QMessageBox.warning(self, "Error", "No device selected.")
-            return
         speed = self.wave_speed.value()
         direction = 0 if self.radio_left.isChecked() else 1
-        extra = [speed, direction]
-        pid = device['pid']
-        transaction_id = device['transaction_id']
-
-        if is_mouse_device(pid):
-            led_id = MOUSE_SCROLL_WHEEL_LED
-            effect_code = MOUSE_EFFECT_WAVE
-            data_size = MOUSE_DATA_SIZE
-            cmd_class = MOUSE_CMD_CLASS
-            cmd_id = MOUSE_CMD_ID
-        elif is_keyboard_device(pid):
-            led_id = KBD_BACKLIGHT_LED
-            effect_code = KBD_EFFECT_WAVE
-            data_size = KBD_DATA_SIZE
-            cmd_class = KBD_CMD_CLASS
-            cmd_id = KBD_CMD_ID
-        else:
-            QMessageBox.warning(self, "Error", "Unsupported device.")
-            return
-        args = build_arguments(effect_code, led_id, extra)
-        report = construct_razer_report(transaction_id, cmd_class, cmd_id, data_size, args)
-        if send_report_to_device(device, report, "Wave Effect"):
-            QMessageBox.information(self, "Success", "Wave effect sent.")
-        else:
-            QMessageBox.warning(self, "Error", "Failed to send effect.")
+        self._send_effect(
+            MOUSE_EFFECT_WAVE, KBD_EFFECT_WAVE,
+            "Wave Effect", [speed, direction],
+        )
 
     def create_tab_reactive(self):
         tab = QWidget()
@@ -246,37 +203,12 @@ class MainWindow(QMainWindow):
         return tab
 
     def send_reactive(self):
-        device = self.get_selected_device()
-        if not device:
-            QMessageBox.warning(self, "Error", "No device selected.")
-            return
         color = [self.reactive_spin_r.value(), self.reactive_spin_g.value(), self.reactive_spin_b.value()]
         duration = self.reactive_duration.value()
-        extra = color + [duration]
-        pid = device['pid']
-        transaction_id = device['transaction_id']
-
-        if is_mouse_device(pid):
-            led_id = MOUSE_SCROLL_WHEEL_LED
-            effect_code = MOUSE_EFFECT_REACTIVE
-            data_size = MOUSE_DATA_SIZE
-            cmd_class = MOUSE_CMD_CLASS
-            cmd_id = MOUSE_CMD_ID
-        elif is_keyboard_device(pid):
-            led_id = KBD_BACKLIGHT_LED
-            effect_code = KBD_EFFECT_REACTIVE
-            data_size = KBD_DATA_SIZE
-            cmd_class = KBD_CMD_CLASS
-            cmd_id = KBD_CMD_ID
-        else:
-            QMessageBox.warning(self, "Error", "Unsupported device.")
-            return
-        args = build_arguments(effect_code, led_id, extra)
-        report = construct_razer_report(transaction_id, cmd_class, cmd_id, data_size, args)
-        if send_report_to_device(device, report, "Reactive Effect"):
-            QMessageBox.information(self, "Success", "Reactive effect sent.")
-        else:
-            QMessageBox.warning(self, "Error", "Failed to send effect.")
+        self._send_effect(
+            MOUSE_EFFECT_REACTIVE, KBD_EFFECT_REACTIVE,
+            "Reactive Effect", color + [duration],
+        )
 
     def create_tab_reset(self):
         tab = QWidget()
@@ -288,30 +220,4 @@ class MainWindow(QMainWindow):
         return tab
 
     def send_reset(self):
-        device = self.get_selected_device()
-        if not device:
-            QMessageBox.warning(self, "Error", "No device selected.")
-            return
-        pid = device['pid']
-        effect_code = 0x00
-        transaction_id = device['transaction_id']
-
-        if is_mouse_device(pid):
-            led_id = MOUSE_SCROLL_WHEEL_LED
-            data_size = MOUSE_DATA_SIZE
-            cmd_class = MOUSE_CMD_CLASS
-            cmd_id = MOUSE_CMD_ID
-        elif is_keyboard_device(pid):
-            led_id = KBD_BACKLIGHT_LED
-            data_size = KBD_DATA_SIZE
-            cmd_class = KBD_CMD_CLASS
-            cmd_id = KBD_CMD_ID
-        else:
-            QMessageBox.warning(self, "Error", "Device type not fully supported yet.")
-            return
-        args = build_arguments(effect_code, led_id, [])
-        report = construct_razer_report(transaction_id, cmd_class, cmd_id, data_size, args)
-        if send_report_to_device(device, report, "Reset Effect"):
-            QMessageBox.information(self, "Success", "Reset effect sent.")
-        else:
-            QMessageBox.warning(self, "Error", "Failed to send reset effect.")
+        self._send_effect(0x00, 0x00, "Reset Effect", [])

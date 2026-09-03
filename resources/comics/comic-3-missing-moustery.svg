@@ -1,0 +1,197 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" font-family="'SF Pro Display', -apple-system, system-ui, 'Segoe UI', Helvetica, sans-serif">
+  <defs>
+    <filter id="panelShadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.06"/>
+    </filter>
+    <clipPath id="titleClip"><rect width="1000" height="52" rx="14"/></clipPath>
+    <linearGradient id="grayToGreen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6B7280"/>
+      <stop offset="60%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#22C55E"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Canvas -->
+  <rect width="1000" height="420" rx="14" fill="#F8FAFC"/>
+
+  <!-- Title Bar -->
+  <rect width="1000" height="52" rx="14" fill="url(#grayToGreen)" clip-path="url(#titleClip)"/>
+  <rect y="28" width="1000" height="24" fill="url(#grayToGreen)"/>
+  <text x="500" y="34" text-anchor="middle" fill="white" font-size="19" font-weight="700" letter-spacing="0.3">Lesson 3: "Mouse Disconnected"</text>
+
+  <!-- Panel 1: Disconnected -->
+  <g filter="url(#panelShadow)">
+    <rect x="16" y="64" width="310" height="296" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  </g>
+
+  <!-- P1: Gray disconnected battery (top right, clear area) -->
+  <g transform="translate(248,80)">
+    <rect x="0" y="6" width="26" height="44" rx="5" fill="none" stroke="#94A3B8" stroke-width="2.5"/>
+    <rect x="7" y="0" width="12" height="8" rx="3" fill="#94A3B8"/>
+    <!-- X mark -->
+    <line x1="8" y1="20" x2="18" y2="36" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="18" y1="20" x2="8" y2="36" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- P1: Empty desk with ghost mouse outline -->
+  <rect x="50" y="300" width="200" height="8" rx="4" fill="#94A3B8" stroke="#64748B" stroke-width="1"/>
+  <ellipse cx="170" cy="293" rx="20" ry="12" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="170" y="298" text-anchor="middle" fill="#CBD5E1" font-size="18" font-weight="700">?</text>
+
+  <!-- P1: Teacher confused -->
+  <g transform="translate(95,185)">
+    <!-- Body -->
+    <rect x="-16" y="42" width="32" height="44" rx="9" fill="#2D8B6F" stroke="#334155" stroke-width="2"/>
+    <!-- Arm scratching head -->
+    <line x1="16" y1="46" x2="24" y2="10" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="25" cy="7" r="5" fill="#D4A574" stroke="#334155" stroke-width="1.5"/>
+    <!-- Head -->
+    <circle cx="0" cy="16" r="24" fill="#D4A574" stroke="#334155" stroke-width="2"/>
+    <!-- Hair -->
+    <path d="M-20,-6 Q-14,-20 0,-18 Q14,-20 20,-6" fill="#5C3D2E" stroke="#334155" stroke-width="1.5"/>
+    <rect x="-20" y="-8" width="40" height="6" rx="3" fill="#5C3D2E"/>
+    <!-- Glasses -->
+    <rect x="-14" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <rect x="3" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <line x1="-3" y1="10" x2="3" y2="10" stroke="#334155" stroke-width="1.5"/>
+    <!-- Confused eyes -->
+    <circle cx="-8" cy="11" r="2.5" fill="#334155"/>
+    <circle cx="8" cy="10" r="2.5" fill="#334155"/>
+    <!-- One eyebrow raised -->
+    <line x1="-14" y1="3" x2="-5" y2="5" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="2" x2="14" y2="5" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+    <!-- Confused mouth -->
+    <path d="M-4,26 Q-1,23 2,26 Q5,29 8,26" fill="none" stroke="#334155" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+
+  <!-- P1: Speech bubble (left side) -->
+  <rect x="32" y="76" width="198" height="72" rx="8" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <polygon points="100,148 108,160 116,148" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="98" y="146" width="20" height="4" fill="white"/>
+  <text x="131" y="98" text-anchor="middle" fill="#1E293B" font-size="12" font-weight="600">Oh no! The mouse</text>
+  <text x="131" y="118" text-anchor="middle" fill="#94A3B8" font-size="14" font-weight="800">is DISCONNECTED!</text>
+  <text x="131" y="136" text-anchor="middle" fill="#94A3B8" font-size="10" font-style="italic">*icon turns gray*</text>
+
+  <!-- Panel 2: Fast polling -->
+  <g filter="url(#panelShadow)">
+    <rect x="338" y="64" width="310" height="296" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  </g>
+
+  <!-- P2: Clock / Timer (top right, clear of bubble) -->
+  <g transform="translate(570,110)">
+    <circle cx="0" cy="0" r="28" fill="white" stroke="#334155" stroke-width="2.5"/>
+    <circle cx="0" cy="0" r="24" fill="none" stroke="#E2E8F0" stroke-width="1"/>
+    <!-- Clock face ticks -->
+    <line x1="0" y1="-20" x2="0" y2="-17" stroke="#334155" stroke-width="1.5"/>
+    <line x1="0" y1="17" x2="0" y2="20" stroke="#334155" stroke-width="1.5"/>
+    <line x1="-20" y1="0" x2="-17" y2="0" stroke="#334155" stroke-width="1.5"/>
+    <line x1="17" y1="0" x2="20" y2="0" stroke="#334155" stroke-width="1.5"/>
+    <!-- Hands -->
+    <line x1="0" y1="2" x2="0" y2="-14" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="2" x2="10" y2="6" stroke="#334155" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="2.5" fill="#334155"/>
+    <!-- "30s" label -->
+    <text x="0" y="42" text-anchor="middle" fill="#F97316" font-size="14" font-weight="700">30s</text>
+    <!-- Spinning arrows -->
+    <path d="M32,-6 A34,34 0 0,1 24,24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
+    <polygon points="24,24 29,18 26,27" fill="#F97316"/>
+    <path d="M-32,6 A34,34 0 0,1 -24,-24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
+    <polygon points="-24,-24 -29,-18 -26,-27" fill="#F97316"/>
+  </g>
+
+  <!-- P2: Teacher waiting patiently -->
+  <g transform="translate(400,195)">
+    <rect x="-16" y="42" width="32" height="44" rx="9" fill="#2D8B6F" stroke="#334155" stroke-width="2"/>
+    <!-- Arms crossed -->
+    <path d="M-16,54 Q0,60 16,54" fill="none" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="0" cy="16" r="24" fill="#D4A574" stroke="#334155" stroke-width="2"/>
+    <path d="M-20,-6 Q-14,-20 0,-18 Q14,-20 20,-6" fill="#5C3D2E" stroke="#334155" stroke-width="1.5"/>
+    <rect x="-20" y="-8" width="40" height="6" rx="3" fill="#5C3D2E"/>
+    <rect x="-14" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <rect x="3" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <line x1="-3" y1="10" x2="3" y2="10" stroke="#334155" stroke-width="1.5"/>
+    <!-- Half-lidded patient eyes -->
+    <path d="M-12,10 Q-8,7 -4,10" fill="none" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M4,10 Q8,7 12,10" fill="none" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Flat mouth -->
+    <line x1="-5" y1="26" x2="5" y2="26" stroke="#334155" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+
+  <!-- P2: Speech bubble (bottom) -->
+  <rect x="354" y="290" width="210" height="56" rx="8" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <polygon points="408,290 416,278 424,290" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="406" y="288" width="20" height="4" fill="white"/>
+  <text x="459" y="310" text-anchor="middle" fill="#1E293B" font-size="11" font-weight="600">Don't worry! The app checks</text>
+  <text x="459" y="328" text-anchor="middle" fill="#F97316" font-size="14" font-weight="800">every 30 seconds now</text>
+
+  <!-- Panel 3: Found it! -->
+  <g filter="url(#panelShadow)">
+    <rect x="660" y="64" width="324" height="296" rx="12" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  </g>
+
+  <!-- P3: Green reconnected battery (top right, clear) -->
+  <g transform="translate(900,78)">
+    <rect x="0" y="8" width="32" height="52" rx="5" fill="none" stroke="#22C55E" stroke-width="3"/>
+    <rect x="9" y="0" width="14" height="10" rx="3" fill="#22C55E"/>
+    <rect x="5" y="44" width="22" height="10" rx="2" fill="#22C55E"/>
+    <rect x="5" y="30" width="22" height="10" rx="2" fill="#22C55E"/>
+    <rect x="5" y="16" width="22" height="10" rx="2" fill="#22C55E"/>
+    <!-- Exclamation sparkles -->
+    <text x="-10" y="28" fill="#EAB308" font-size="16" font-weight="700">!</text>
+    <text x="38" y="40" fill="#EAB308" font-size="16" font-weight="700">!</text>
+    <text x="16" y="78" text-anchor="middle" fill="#22C55E" font-size="13" font-weight="700">85%</text>
+  </g>
+
+  <!-- P3: Mouse back on desk -->
+  <rect x="690" y="302" width="180" height="8" rx="4" fill="#94A3B8" stroke="#64748B" stroke-width="1"/>
+  <g transform="translate(780,294)">
+    <ellipse cx="0" cy="0" rx="20" ry="12" fill="#404040" stroke="#334155" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-8" rx="7" ry="4" fill="#555"/>
+    <!-- Glow rings -->
+    <ellipse cx="0" cy="0" rx="28" ry="18" fill="none" stroke="#22C55E" stroke-width="1" opacity="0.3"/>
+    <ellipse cx="0" cy="0" rx="34" ry="22" fill="none" stroke="#22C55E" stroke-width="0.5" opacity="0.15"/>
+  </g>
+
+  <!-- P3: Teacher celebrating -->
+  <g transform="translate(740,185)">
+    <rect x="-16" y="42" width="32" height="44" rx="9" fill="#2D8B6F" stroke="#334155" stroke-width="2"/>
+    <!-- Arms up celebrating -->
+    <line x1="-16" y1="48" x2="-32" y2="18" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="16" y1="48" x2="32" y2="18" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="-34" cy="15" r="5" fill="#D4A574" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="34" cy="15" r="5" fill="#D4A574" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="0" cy="16" r="24" fill="#D4A574" stroke="#334155" stroke-width="2"/>
+    <path d="M-20,-6 Q-14,-20 0,-18 Q14,-20 20,-6" fill="#5C3D2E" stroke="#334155" stroke-width="1.5"/>
+    <rect x="-20" y="-8" width="40" height="6" rx="3" fill="#5C3D2E"/>
+    <rect x="-14" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <rect x="3" y="6" width="11" height="9" rx="3" fill="none" stroke="#334155" stroke-width="1.8"/>
+    <line x1="-3" y1="10" x2="3" y2="10" stroke="#334155" stroke-width="1.5"/>
+    <!-- Happy squint eyes -->
+    <path d="M-12,10 Q-8,6 -4,10" fill="none" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M4,10 Q8,6 12,10" fill="none" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Big happy mouth -->
+    <path d="M-7,24 Q0,32 7,24" fill="none" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- P3: Speech bubble (left area, above teacher) -->
+  <rect x="676" y="76" width="200" height="68" rx="8" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <polygon points="740,144 748,156 756,144" fill="white" stroke="#CBD5E1" stroke-width="1.5"/>
+  <rect x="738" y="142" width="20" height="4" fill="white"/>
+  <text x="776" y="98" text-anchor="middle" fill="#1E293B" font-size="13" font-weight="600">It reconnected!</text>
+  <text x="776" y="118" text-anchor="middle" fill="#22C55E" font-size="16" font-weight="800">Back online!</text>
+  <text x="776" y="136" text-anchor="middle" fill="#94A3B8" font-size="10" font-style="italic">*5-min polling restored*</text>
+
+  <!-- Bottom Bar -->
+  <rect y="372" width="1000" height="48" rx="0" fill="#1E293B"/>
+  <rect y="406" width="1000" height="14" rx="14" fill="#1E293B"/>
+  <text x="500" y="396" text-anchor="middle" fill="#94A3B8" font-size="12" font-weight="500">
+    Disconnected <tspan fill="#94A3B8" font-weight="700">GRAY</tspan>
+    <tspan fill="#64748B" dx="8">--></tspan>
+    <tspan fill="#94A3B8" dx="8">Fast</tspan>
+    <tspan fill="#F97316" font-weight="700"> 30s Polling</tspan>
+    <tspan fill="#64748B" dx="8">--></tspan>
+    <tspan fill="#94A3B8" dx="8">Reconnected</tspan>
+    <tspan fill="#22C55E" font-weight="700"> GREEN</tspan>
+    <tspan fill="#94A3B8">, back to 5-min poll</tspan>
+  </text>
+</svg>

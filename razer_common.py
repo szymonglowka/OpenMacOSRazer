@@ -1,7 +1,18 @@
 #!/usr/bin/env python3
 
 import time
+import logging
 import hid
+
+logger = logging.getLogger("razer_common")
+
+# Razer response status codes (byte index 0 in the 90-byte report, index 1 with report ID prefix)
+RAZER_STATUS_NEW = 0x00
+RAZER_STATUS_BUSY = 0x01
+RAZER_STATUS_SUCCESS = 0x02
+RAZER_STATUS_FAILURE = 0x03
+RAZER_STATUS_TIMEOUT = 0x04
+RAZER_STATUS_NOT_SUPPORTED = 0x05
 
 RAZER_VID = 0x1532
 
@@ -102,6 +113,8 @@ RAZER_DEVICES = {
     0x00B7: "Razer DeathAdder V3 Pro (Wireless)",
     0x00B8: "Razer Viper V3 HyperSpeed",
     0x00B9: "Razer Basilisk V3 X HyperSpeed",
+    0x00BE: "Razer DeathAdder V4 Pro (Wired)",
+    0x00BF: "Razer DeathAdder V4 Pro (Wireless)",
     0x00C0: "Razer Viper V3 Pro (Wired)",
     0x00C1: "Razer Viper V3 Pro (Wireless)",
     0x00C2: "Razer DeathAdder V3 Pro (Wired)",
@@ -229,6 +242,9 @@ RAZER_DEVICES = {
     0x02B8: "Razer Blade 18 (2024)",
     0x02B9: "Razer BlackWidow V4 Mini HyperSpeed (Wired)",
     0x02BA: "Razer BlackWidow V4 Mini HyperSpeed (Wireless)",
+    0x02C5: "Razer Blade 14 (2025)",
+    0x02C6: "Razer Blade 16 (2025)",
+    0x02C7: "Razer Blade 18 (2025)",
     0x0501: "Razer Kraken 7.1",
     0x0504: "Razer Kraken 7.1 Chroma",
     0x0506: "Razer Kraken 7.1 (Alternate)",
@@ -473,7 +489,7 @@ RAZER_DEVICE_TYPES = {
     0x00AF: 'mouse',
     0x00B0: 'mouse',
     0x00B2: 'mouse',
-    0x00B3: 'mouse',
+    0x00B3: 'dongle',
     0x00B4: 'mouse',
     0x00B6: 'mouse',
     0x00B7: 'mouse',
@@ -496,15 +512,53 @@ RAZER_DEVICE_TYPES = {
     0x00D1: 'mouse',
     0x00D6: 'mouse',
     0x00D7: 'mouse',
+    # Mousepads
+    0x0068: 'mousepad',
+    0x0C00: 'mousepad',
+    0x0C01: 'mousepad',
+    0x0C02: 'mousepad',
+    0x0C04: 'mousepad',
+    0x0C05: 'mousepad',
+    0x0C06: 'mousepad',
+    0x0C08: 'mousepad',
+    # Headsets
+    0x0501: 'headset',
+    0x0504: 'headset',
+    0x0506: 'headset',
+    0x0510: 'headset',
+    0x0527: 'headset',
+    0x0560: 'headset',
+    0x0F19: 'headset',
+    # Speakers
+    0x0517: 'speaker',
+    0x0518: 'speaker',
+    # Accessories
+    0x007E: 'accessory',
+    0x0215: 'accessory',
+    0x0F07: 'accessory',
+    0x0F08: 'accessory',
+    0x0F09: 'accessory',
+    0x0F0D: 'accessory',
+    0x0F12: 'accessory',
+    0x0F17: 'accessory',
+    0x0F1A: 'accessory',
+    0x0F1D: 'accessory',
+    0x0F1F: 'accessory',
+    0x0F20: 'accessory',
+    0x0F21: 'accessory',
+    0x0F26: 'accessory',
+    0x0F2B: 'accessory',
 }
 
 RAZER_TRANSACTION_IDS = {
     0x0013: 0xFF,
     0x0015: 0x3F,
+    0x0016: 0x3F,
     0x001F: 0x3F,
     0x0020: 0x3F,
     0x0024: 0x3F,
     0x0025: 0x3F,
+    0x0029: 0x3F,
     0x002E: 0x3F,
     0x002F: 0x3F,
     0x0032: 0x3F,
@@ -768,6 +822,10 @@ def construct_razer_report(transaction_id: int, command_class: int, command_id: 
                            data_size: int, arguments: list) -> bytes:
     if len(arguments) > 80:
         raise ValueError("Arguments list too long (max 80 bytes)")
+    try:
+        arg_bytes = bytes(arguments)
+    except (TypeError, ValueError) as e:
+        raise ValueError(f"Arguments must be byte-like integers (0-255): {e}") from e
     report = bytearray(REPORT_LEN)
     report[0] = 0x00
     report[1] = transaction_id & 0xFF
@@ -778,7 +836,7 @@ def construct_razer_report(transaction_id: int, command_class: int, command_id: 
     report[6] = command_class & 0xFF
     report[7] = command_id & 0xFF
     arg_len = min(len(arguments), 80)
-    report[8:8 + arg_len] = bytes(arguments)
+    report[8:8 + arg_len] = arg_bytes[:arg_len]
     report[88] = calculate_crc(report)
     report[89] = 0x00
     return bytes(report)
@@ -787,19 +845,23 @@ def scan_razer_devices() -> list:
     devices_grouped = {}
     try:
         all_devices = hid.enumerate(RAZER_VID, 0x0)
-        if not all_devices:
-            return []
-        parameterized_pids = set(RAZER_DEVICES.keys())
-        enumerated = [d for d in all_devices if d['product_id'] in parameterized_pids]
-        if not enumerated:
-            return []
-        for dev in enumerated:
+    except Exception as e:
+        logger.error("Error enumerating HID devices: %s", e)
+        return []
+    if not all_devices:
+        return []
+    parameterized_pids = set(RAZER_DEVICES.keys())
+    enumerated = [d for d in all_devices if d.get('product_id') in parameterized_pids]
+    if not enumerated:
+        return []
+    for dev in enumerated:
+        try:
             pid = dev['product_id']
+            path = dev['path']
             name = RAZER_DEVICES.get(pid, f"Unknown (PID: 0x{pid:04X})")
             device_type = get_device_type(pid)
             transaction_id = get_transaction_id(pid)
             interface_num = dev.get('interface_number', -1)
-            path = dev['path']
             serial = dev.get('serial_number', 'N/A')
             prod_str = dev.get('product_string', 'N/A')
             key = (serial, prod_str, pid)
@@ -811,13 +873,17 @@ def scan_razer_devices() -> list:
                     'transaction_id': transaction_id,
                     'interfaces': []
                 }
-            devices_grouped[key]['interfaces'].append({
-                'path': path,
-                'interface_number': interface_num
-            })
-    except Exception as e:
-        print("Error scanning devices:", e)
-        return []
+            # Deduplicate: only add each unique path once (HID enumerate
+            # returns multiple entries per path for different usage pages)
+            existing_paths = {i['path'] for i in devices_grouped[key]['interfaces']}
+            if path not in existing_paths:
+                devices_grouped[key]['interfaces'].append({
+                    'path': path,
+                    'interface_number': interface_num
+                })
+        except (KeyError, TypeError) as e:
+            logger.warning("Skipping malformed HID entry: %s", e)
+            continue
     return list(devices_grouped.values())
 
 def build_arguments(effect_code: int, led_id: int, extra_params: list) -> list:
@@ -829,6 +895,7 @@ def send_report_to_device(selected_device: dict, report: bytes, command_desc: st
     success = False
     for iface in selected_device.get('interfaces', []):
         path = iface['path']
+        dev = None
         try:
             dev = hid.device()
             dev.open_path(path)
@@ -836,10 +903,199 @@ def send_report_to_device(selected_device: dict, report: bytes, command_desc: st
             bytes_written = dev.send_feature_report(report_with_id)
             if bytes_written == len(report_with_id):
                 success = True
-            dev.close()
+            else:
+                logger.warning("[%s] Partial write on %s: %d/%d bytes",
+                               command_desc, path, bytes_written, len(report_with_id))
+        except (OSError, IOError) as e:
+            logger.warning("[%s] I/O error on interface %s: %s", command_desc, path, e)
         except Exception as e:
-            print(f"Error on interface {path}: {e}")
+            logger.error("[%s] Unexpected error on interface %s: %s", command_desc, path, e)
+        finally:
+            if dev is not None:
+                try:
+                    dev.close()
+                except Exception:
+                    pass
     return success
+
+def validate_response(response, command_desc: str = "") -> bool:
+    """Validate a Razer HID response: check status byte and CRC.
+    Returns True if response is usable, False otherwise.
+    Logs warnings for issues but only returns False for hard failures.
+    """
+    if not response or len(response) <= 9:
+        logger.warning("[%s] Response too short: %d bytes", command_desc, len(response) if response else 0)
+        return False
+
+    # Status byte is at index 1 (after report ID prefix byte at index 0)
+    status = response[1] if len(response) > 1 else 0xFF
+    status_names = {
+        RAZER_STATUS_NEW: "new/pending",
+        RAZER_STATUS_BUSY: "busy",
+        RAZER_STATUS_SUCCESS: "success",
+        RAZER_STATUS_FAILURE: "failure",
+        RAZER_STATUS_TIMEOUT: "timeout",
+        RAZER_STATUS_NOT_SUPPORTED: "not supported",
+    }
+
+    if status == RAZER_STATUS_SUCCESS:
+        pass  # expected
+    elif status == RAZER_STATUS_BUSY:
+        logger.warning("[%s] Device busy (status 0x%02X)", command_desc, status)
+        return False
+    elif status in (RAZER_STATUS_FAILURE, RAZER_STATUS_TIMEOUT, RAZER_STATUS_NOT_SUPPORTED):
+        logger.warning("[%s] Device returned %s (status 0x%02X)", command_desc,
+                       status_names.get(status, "unknown"), status)
+        return False
+    else:
+        # 0x00 (new) or unknown — device may not set status; treat as usable
+        logger.debug("[%s] Response status 0x%02X (%s)", command_desc, status,
+                     status_names.get(status, "unknown"))
+
+    # CRC validation: XOR of bytes 2-87 in the report (indices 3-88 with report ID prefix)
+    if len(response) >= 90:
+        expected_crc = response[89]  # byte 88 of report = index 89 with prefix
+        computed_crc = 0
+        for i in range(3, 89):  # bytes 2-87 of report = indices 3-88 with prefix
+            computed_crc ^= response[i]
+        if computed_crc != expected_crc:
+            logger.warning("[%s] CRC mismatch: computed 0x%02X, expected 0x%02X (non-fatal)",
+                           command_desc, computed_crc, expected_crc)
+            # Non-fatal: still return True and let caller use the data
+
+    return True
+
+
+def send_and_receive_report(selected_device: dict, report: bytes, command_desc: str = "") -> list:
+    """Send a feature report and read the device response.
+    Returns response bytes or None. Retries once per interface on failure.
+    """
+    report_with_id = b'\x00' + report
+    # Prefer the interface that worked last, then interface 0, then others.
+    preferred_path = selected_device.get('preferred_interface_path')
+    interfaces = list(selected_device.get('interfaces', []))
+    interfaces.sort(key=lambda iface: (
+        0 if preferred_path is not None and iface.get('path') == preferred_path else 1,
+        0 if iface.get('interface_number', -1) == 0 else 1,
+        iface.get('interface_number', 999),
+    ))
+
+    attempted_ifaces = []
+    io_errors = []
+    open_failed_count = 0
+
+    for iface in interfaces:
+        path = iface['path']
+        iface_num = iface.get('interface_number', -1)
+        attempted_ifaces.append(iface_num)
+        for attempt in range(2):  # max 2 attempts per interface
+            dev = None
+            try:
+                dev = hid.device()
+                dev.open_path(path)
+                time.sleep(0.05)
+                dev.send_feature_report(report_with_id)
+                time.sleep(0.08)
+                response = dev.get_feature_report(0x00, REPORT_LEN + 1)
+                dev.close()
+                dev = None
+                if validate_response(response, command_desc):
+                    selected_device['preferred_interface_path'] = path
+                    selected_device['_diag_last_ok'] = True
+                    selected_device['_diag_last_command'] = command_desc
+                    selected_device['_diag_last_interface'] = iface_num
+                    selected_device['_diag_last_attempted_interfaces'] = attempted_ifaces
+                    selected_device['_diag_last_io_errors'] = io_errors[-5:]
+                    selected_device['_diag_last_open_failed_count'] = open_failed_count
+                    return response
+                # Invalid response — try next interface (don't retry same one for bad data)
+                break
+            except (OSError, IOError) as e:
+                msg = str(e)
+                io_errors.append(msg)
+                if "open failed" in msg.lower():
+                    open_failed_count += 1
+                logger.warning("[%s] iface %d attempt %d: device I/O error: %s",
+                               command_desc, iface_num, attempt + 1, e)
+                if dev:
+                    try:
+                        dev.close()
+                    except Exception:
+                        pass
+                if attempt == 0:
+                    time.sleep(0.2)  # backoff before retry
+                continue
+            except ValueError as e:
+                io_errors.append(str(e))
+                logger.warning("[%s] iface %d: malformed report: %s", command_desc, iface_num, e)
+                if dev:
+                    try:
+                        dev.close()
+                    except Exception:
+                        pass
+                break  # don't retry malformed data
+            except Exception as e:
+                io_errors.append(str(e))
+                logger.error("[%s] iface %d attempt %d: unexpected error: %s",
+                             command_desc, iface_num, attempt + 1, e)
+                if dev:
+                    try:
+                        dev.close()
+                    except Exception:
+                        pass
+                if attempt == 0:
+                    time.sleep(0.2)
+                continue
+    selected_device['_diag_last_ok'] = False
+    selected_device['_diag_last_command'] = command_desc
+    selected_device['_diag_last_attempted_interfaces'] = attempted_ifaces
+    selected_device['_diag_last_io_errors'] = io_errors[-5:]
+    selected_device['_diag_last_open_failed_count'] = open_failed_count
+    return None
+
+
+def get_battery_level(device: dict) -> int:
+    """Query battery level. Returns 0-100 percentage, or -1 on failure.
+    Retries once on failure with 500ms backoff.
+    """
+    tid = device.get('transaction_id', 0x1F)
+    report = construct_razer_report(tid, 0x07, 0x80, 0x02, [0x00, 0x00])
+
+    for attempt in range(2):
+        response = send_and_receive_report(device, report, "get_battery_level")
+        if response and len(response) > 10:
+            raw = response[10]  # arguments[1] at offset 10 (get_feature_report prepends report ID byte)
+            level = min(max(round(raw / 255 * 100), 0), 100)
+            logger.debug("Battery raw=0x%02X (%d%%)", raw, level)
+            return level
+        if attempt == 0:
+            logger.debug("get_battery_level: first attempt failed, retrying in 500ms")
+            time.sleep(0.5)
+
+    logger.warning("get_battery_level: all attempts failed")
+    return -1
+
+
+def get_charging_status(device: dict) -> bool:
+    """Query charging status. Returns True if charging, False otherwise.
+    Retries once on failure with 500ms backoff.
+    """
+    tid = device.get('transaction_id', 0x1F)
+    report = construct_razer_report(tid, 0x07, 0x84, 0x02, [0x00, 0x00])
+
+    for attempt in range(2):
+        response = send_and_receive_report(device, report, "get_charging_status")
+        if response and len(response) > 10:
+            charging = response[10] > 0
+            logger.debug("Charging status raw=0x%02X (charging=%s)", response[10], charging)
+            return charging
+        if attempt == 0:
+            logger.debug("get_charging_status: first attempt failed, retrying in 500ms")
+            time.sleep(0.5)
+
+    logger.warning("get_charging_status: all attempts failed")
+    return False
+
 
 def is_mouse_device(pid: int) -> bool:
     return get_device_type(pid) == 'mouse'
